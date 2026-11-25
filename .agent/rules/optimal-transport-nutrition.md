@@ -1,10 +1,13 @@
 # Quy tắc Toán - Sinh học & Thuật toán Vận tải Tối ưu (Optimal Transport Nutrition Rules)
 
-Mọi mã nguồn tính toán độ đo dinh dưỡng tổng thể trong dự án này **BẮT BUỘC** phải tuân thủ nghiêm ngặt các nguyên lý toán học và an toàn sinh học được quy định trong tài liệu sáng chế [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx):
+Mọi mã nguồn tính toán độ đo dinh dưỡng tổng thể trong dự án này **BẮT BUỘC** phải tuân thủ nghiêm ngặt các nguyên lý toán học và an toàn sinh học được quy định trong cả hai tài liệu gốc:
+1. **Đề bài nghiên cứu:** [Description of Độ đo tổng thể..docx](file:///d:/App_trong_cay/Agriculture_App/Description%20of%20%C4%90%E1%BB%99%20%C4%91o%20t%E1%BB%95ng%20th%E1%BB%83..docx)
+2. **Tài liệu sáng chế mở rộng:** [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx)
 
-## 1. Cấm sử dụng Trung bình cộng đối xứng làm kết quả điều khiển chính
-* Không bao giờ dùng trung bình cộng Euclidean đơn thuần $\bar{y} = \frac{1}{N}\sum_{i=1}^N y_{i,t}^{\text{target}}$ để điều khiển nồng độ dinh dưỡng EC ($y$), vì sai lệch dương (dư thừa phân bón gây cháy rễ, ngộ độc chất tan) nguy hiểm gấp nhiều lần sai lệch âm (thiếu hụt nhẹ trong ngắn hạn).
-* Trung bình cộng Euclidean chỉ được tính để làm **mốc đối chiếu (Baseline Comparison)** trên giao diện nhằm chứng minh tính ưu việt của thuật toán Vận tải tối ưu.
+## 1. Cấm sử dụng Trung bình cộng Euclidean [24] hoặc DTW [25] làm kết quả điều khiển chính
+* Không dùng khoảng cách Euclidean đối xứng [24] làm kết quả điều khiển chính vì không nắm bắt được đặc tính sinh trưởng bất đối xứng (dư thừa $y$ gây **cháy rễ**, lệch trên $x$ gây **bó rễ / khóa dinh dưỡng**).
+* Không dùng Dynamic Time Warping (DTW) [25] để tối ưu đa vùng thời gian thực vì có độ phức tạp bậc hai $O(N^2)$ và vi phạm bất đẳng thức tam giác.
+* Phương pháp cốt lõi là **Tối ưu hóa Tâm hình học Wasserstein tổng quát (Generalized Wasserstein Barycenter) [24, 26, 27]** kết hợp **Hàm chi phí tổn thất sinh học bất đối xứng của Chuyên gia nông nghiệp** (giải bằng **Vận tải tối ưu OT** và **Thuật toán tìm cực tiểu Nelder-Mead**), giúp giảm số lần hòa trộn từ $4 \times N$ lần xuống **1 lần/chu kỳ (hoặc 1 lần/ngày)**, tiết kiệm **điện, nước, dinh dưỡng, acid và bazơ**.
 
 ## 2. Hàm Khoảng cách Toán - Sinh học Bất đối xứng ($\mathcal{D}_{\text{bio}}$)
 * Khoảng cách từ cấu hình bể phối trộn $(x, y)$ đến luống cây $i \in \{1..N\}$ tại khối giờ $t$ luôn được phân rã đại số:

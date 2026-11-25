@@ -10,18 +10,20 @@ description: >-
 
 # Optimal Transport Adaptive Nutrition Algorithm Skill
 
-Use this skill when implementing or modifying the core mathematical engine of the application based on [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx).
+Use this skill when implementing or modifying the core mathematical engine of the application based on both [Description of Độ đo tổng thể..docx](file:///d:/App_trong_cay/Agriculture_App/Description%20of%20%C4%90%E1%BB%99%20%C4%91o%20t%E1%BB%95ng%20th%E1%BB%83..docx) and [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx).
 
-## Step 1: Implement the Asymmetric Biological Distance ($\mathcal{D}_{\text{bio}}$)
+## Step 1: Implement the Asymmetric Biological Distance ($\mathcal{D}_{\text{bio}}$) & 5-Resource Cost Savings
 
-Given a candidate solution $(x, y)$ and bed $i$'s target $(x_{i,t}^{\text{target}}, y_{i,t}^{\text{target}})$ at time block $t \in \{1, 2, 3\}$:
+Given a candidate solution $(x, y)$ and bed $i$'s target $(x_{i,t}^{\text{target}}, y_{i,t}^{\text{target}})$ at time block $t \in \{1, 2, 3\}$ (or daily cycle):
 
-1. **pH Loss ($\mathcal{L}_{x,t}$):**
-   $$\mathcal{L}_{x,t}(x, x_{i,t}^{\text{target}}) = \alpha_t \cdot (x - x_{i,t}^{\text{target}})^2$$
-2. **Asymmetric EC Loss ($\mathcal{L}_{y,t}$):**
-   $$\mathcal{L}_{y,t}(y, y_{i,t}^{\text{target}}) = \begin{cases} w_{\text{low},t} \cdot (y_{i,t}^{\text{target}} - y) & \text{if } y \le y_{i,t}^{\text{target}} \\ w_{\text{high},t} \cdot (y - y_{i,t}^{\text{target}}) & \text{if } y > y_{i,t}^{\text{target}} \end{cases}$$
-3. **Total Biological Cost:**
-   $$\mathcal{D}_{\text{bio}}((x, y) \rightarrow (x_{i,t}^{\text{target}}, y_{i,t}^{\text{target}})) = \mathcal{L}_{x,t} + \mathcal{L}_{y,t}$$
+1. **pH Loss ($\mathcal{L}_{x,i,t}$) with Expert Nutrient-Lockout Penalty ("Bó rễ"):**
+   $$\mathcal{L}_{x,i,t}(x, x_{i,t}^{\text{target}}) = \alpha_t \cdot (x - x_{i,t}^{\text{target}})^2 + \begin{cases} w_{\text{low},i,t}^{(x)} \cdot (x_{i,t}^{\text{target}} - x) & \text{if } x \le x_{i,t}^{\text{target}} \\ w_{\text{high},i,t}^{(x)} \cdot (x - x_{i,t}^{\text{target}}) & \text{if } x > x_{i,t}^{\text{target}} \text{ (nutrient lockout / bó rễ)} \end{cases}$$
+   *(Note: In standard patent mode $w_{\text{low},i,t}^{(x)} = w_{\text{high},i,t}^{(x)} = 0$; in expert asymmetric pH mode from the problem statement, $w_{\text{high},i,t}^{(x)} > w_{\text{low},i,t}^{(x)} \ge 0$ configured per crop and growth stage).*
+2. **Asymmetric EC Loss ($\mathcal{L}_{y,i,t}$) with Expert Root-Burn Penalty ("Cháy rễ"):**
+   $$\mathcal{L}_{y,i,t}(y, y_{i,t}^{\text{target}}) = \begin{cases} w_{\text{low},i,t} \cdot (y_{i,t}^{\text{target}} - y) & \text{if } y \le y_{i,t}^{\text{target}} \\ w_{\text{high},i,t} \cdot (y - y_{i,t}^{\text{target}}) & \text{if } y > y_{i,t}^{\text{target}} \text{ (root burn / cháy rễ)} \end{cases}$$
+3. **Total Biological Cost & Solvers (Optimal Transport & Nelder-Mead Simplex):**
+   $$\mathcal{D}_{\text{bio}}((x, y) \rightarrow (x_{i,t}^{\text{target}}, y_{i,t}^{\text{target}})) = \mathcal{L}_{x,i,t} + \mathcal{L}_{y,i,t}$$
+   * Support both the **Exact Quantile / OT Barycenter Solver** and the **2D Nelder-Mead Simplex Search Solver** (recording simplex vertices at each iteration to render the search trajectory on the 2D chart), plus quantify the **5 control cost savings (Electricity, Water, Nutrients, Acid, Base)** compared to $4 \times N$ daily mixing cycles.
 
 ## Step 2: Apply Tier-1 Climate-Driven Adaptive Weights
 
