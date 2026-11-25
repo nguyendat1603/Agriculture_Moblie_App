@@ -1,6 +1,19 @@
 # 02. Đặc Tả Toán Học & Thuật Toán Cốt Lõi (Mathematical Core & Algorithm Specification)
 
-Tài liệu này chuyển hóa toàn bộ mô hình toán học trong [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx) thành đặc tả kỹ thuật chính xác để lập trình module Core Engine của ứng dụng di động.
+Tài liệu này chuyển hóa toàn bộ mô hình toán học trong hai tài liệu gốc:
+1. **Đề bài / Thuyết minh bài toán:** [Description of Độ đo tổng thể..docx](file:///d:/App_trong_cay/Agriculture_App/Description%20of%20%C4%90%E1%BB%99%20%C4%91o%20t%E1%BB%95ng%20th%E1%BB%83..docx) *(Mô hình hóa độ đo dinh dưỡng tổng thể $(x^*, y^*)$ hàng ngày giảm chi phí điều khiển điện, nước, dinh dưỡng, acid, bazơ từ $4N$ lần xuống 1 lần/chu kỳ; bộ lọc khoảng cách sinh học chuyên gia cho cả $x$ tránh bó rễ và $y$ tránh cháy rễ; bộ giải OT & Nelder-Mead)*.
+2. **Bản mô tả sáng chế mở rộng:** [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx) *(Thích ứng 4 khối giờ sinh học & vi khí hậu, Đa tâm động Wasserstein K-Means và Bơm bù vi phân tái sử dụng dung dịch nền)*.
+
+---
+
+## 0. Đối chiếu Học thuật 4 Thước đo Khoảng cách (Theoretical Foundation [24–27])
+
+| Thước đo / Phương pháp | Độ phức tạp | Tính chất Toán - Sinh học | Đánh giá tính khả thi cho $N$ luống cây |
+| :--- | :---: | :--- | :--- |
+| **1. Khoảng cách Euclidean [24]** | $O(N)$ | Đối xứng phẳng, cố định, bỏ qua phụ thuộc thời gian | ❌ **Không phù hợp:** Phạt thiếu hụt và dư thừa ngang nhau $\rightarrow$ Nghiệm trung bình cộng gây **cháy rễ** ($y$ cao) hoặc **bó rễ** ($x$ cao). |
+| **2. Dynamic Time Warping (DTW) [25]** | $O(N^2 \cdot T^2)$ | Căn chỉnh chuỗi thời gian phi tuyến, nhưng **vi phạm bất đẳng thức tam giác** | ❌ **Không khả thi:** Bậc hai gây quá tải vi xử lý IoT khi $N$ lớn và không hội tụ chặt chẽ cho bài toán tối ưu đa vùng thời gian thực. |
+| **3. Temporal Tree Wasserstein (TTW) [26, 27]** | $O(N \cdot T)$ | Khung Vận tải tối ưu (OT) trên cây thời gian, nhưng vẫn thuần túy hình học đối xứng | ⚠️ **Chưa đủ:** Nhanh và bảo toàn cấu trúc thời gian nhưng thiếu tri thức sinh học bất đối xứng của chuyên gia nông nghiệp. |
+| **4. Generalized Bio-Wasserstein Barycenter (Đề xuất)** | $O(N \log N)$ / Nelder-Mead | Tích hợp **Hàm chi phí tổn thất sinh học bất đối xứng của Chuyên gia** vào khung OT Barycenter [24, 27] | ✅ **Tối ưu:** Giảm số lần pha từ $4N$ xuống **1 lần/chu kỳ**, tiết kiệm tối đa điện, nước, phân, acid, bazơ và bảo vệ tuyệt đối hệ rễ. |
 
 ---
 
@@ -59,11 +72,17 @@ Khoảng cách toán – sinh học hiệu chỉnh $\mathcal{D}_{\text{bio}}$ t�
 $$\mathcal{D}_{\text{bio}}\left((x, y) \rightarrow \left(x_{i,t}^{\text{target}}, y_{i,t}^{\text{target}}\right)\right) = \mathcal{L}_{x,t}\left(x, x_{i,t}^{\text{target}}\right) + \mathcal{L}_{y,t}\left(y, y_{i,t}^{\text{target}}\right)$$
 
 Trong đó:
-1. **Hàm tổn thất chỉ số pH ($\mathcal{L}_{x,t}$):**
-   $$\mathcal{L}_{x,t}\left(x, x_{i,t}^{\text{target}}\right) = \alpha_t \cdot \left(x - x_{i,t}^{\text{target}}\right)^2$$
+1. **Hàm tổn thất chỉ số độ pH ($\mathcal{L}_{x,t}$) – Tích hợp Hệ số phạt Chuyên gia chống Bó rễ (Nutrient Lockout):**
+   * **Dạng Chuẩn hóa Thang đo (Sáng chế):**
+     $$\mathcal{L}_{x,t}^{\text{quad}}\left(x, x_{i,t}^{\text{target}}\right) = \alpha_t \cdot \left(x - x_{i,t}^{\text{target}}\right)^2$$
+   * **Dạng Tổng quát Bất đối xứng của Chuyên gia Nông nghiệp (Theo Đề bài `Description of Độ đo tổng thể..docx`):**
+     Để phản ánh việc lệch dưới hay lệch trên của chỉ số $x$ (pH) cũng phát sinh chi phí bất đối xứng (đặc biệt khi $x > x_{i,t}^{\text{target}}$ làm kết tủa muối khoáng gây **bó rễ / khóa dinh dưỡng**), chuyên gia cấu hình cặp hệ số phạt $(w_{\text{low},i,t}^{(x)}, w_{\text{high},i,t}^{(x)})$ riêng cho từng loại cây $i$ và giai đoạn sinh trưởng:
+     $$\mathcal{L}_{x,i,t}\left(x, x_{i,t}^{\text{target}}\right) = \alpha_t \cdot \left(x - x_{i,t}^{\text{target}}\right)^2 + \begin{cases} w_{\text{low},i,t}^{(x)} \cdot \left(x_{i,t}^{\text{target}} - x\right) & \text{khi } x \le x_{i,t}^{\text{target}} \text{ (lệch dưới } x\text{)} \\ w_{\text{high},i,t}^{(x)} \cdot \left(x - x_{i,t}^{\text{target}}\right) & \text{khi } x > x_{i,t}^{\text{target}} \text{ (lệch trên } x \text{ - nguy cơ bó rễ)} \end{cases}$$
+     *(Lưu ý: Khi $w_{\text{low},i,t}^{(x)} = w_{\text{high},i,t}^{(x)} = 0$, hàm suy biến về đúng dạng đối xứng bậc hai $\alpha_t (x - x_{i,t}^{\text{target}})^2$ với nghiệm trung bình cộng $x^* = 6.1$; khi bật trọng số phạt bất đối xứng chuyên gia cho $x$, nghiệm $x^*$ sẽ dịch chuyển nhẹ về phía pH an toàn chống bó rễ).*
 
-2. **Hàm tổn thất bất đối xứng chỉ số dẫn điện EC ($\mathcal{L}_{y,t}$):**
-   $$\mathcal{L}_{y,t}\left(y, y_{i,t}^{\text{target}}\right) = \begin{cases} w_{\text{low},t} \cdot \left(y_{i,t}^{\text{target}} - y\right) & \text{khi } y \le y_{i,t}^{\text{target}} \text{ (thiếu hụt nồng độ)} \\ w_{\text{high},t} \cdot \left(y - y_{i,t}^{\text{target}}\right) & \text{khi } y > y_{i,t}^{\text{target}} \text{ (dư thừa nồng độ)} \end{cases}$$
+2. **Hàm tổn thất bất đối xứng chỉ số dẫn điện EC ($\mathcal{L}_{y,t}$) – Chống Cháy rễ (Root Burn):**
+   Chuyên gia nông nghiệp cấu hình cặp hệ số phạt $(w_{\text{low},i,t}^{(y)}, w_{\text{high},i,t}^{(y)})$ theo loại cây $i$, giai đoạn sinh trưởng và khối giờ $t$:
+   $$\mathcal{L}_{y,i,t}\left(y, y_{i,t}^{\text{target}}\right) = \begin{cases} w_{\text{low},i,t} \cdot \left(y_{i,t}^{\text{target}} - y\right) & \text{khi } y \le y_{i,t}^{\text{target}} \text{ (Low Penalty: thiếu hụt vi lượng nhẹ)} \\ w_{\text{high},i,t} \cdot \left(y - y_{i,t}^{\text{target}}\right) & \text{khi } y > y_{i,t}^{\text{target}} \text{ (High Penalty: dư thừa gây cháy rễ)} \end{cases}$$
 
 ---
 
@@ -91,8 +110,29 @@ Do hàm mục tiêu $J_t(x, y) = J_{x,t}(x) + J_{y,t}(y)$ phân rã hoàn toàn 
      Nghiệm tối ưu $y^*$ chính là giá trị nhỏ nhất $y_{(m)}$ sao cho tổng trọng số tích lũy đạt hoặc vượt $\tau_t$:
      $$m = \min \left\{ r \in \{1, \dots, N\} \;\middle|\; \frac{r}{N} \ge \tau_t \right\} \implies y^* = y_{(m)}$$
      *(Nhận xét: Với $k_t \ge 5 \implies \tau_t \le \frac{1}{6} \approx 0.167$. Khi $N=2$ luống cây như trong ví dụ Xà lách $1.2$ và Cải ngọt $1.8$, ta có $\frac{1}{2} = 0.5 \ge \tau_t \implies m=1 \implies y^* = y_{(1)} = 1.2\text{ mS/cm}$! Nghiệm khớp 100% với tài liệu sáng chế).*
-   * **Phương pháp 2 – Tối ưu hóa làm trơn Entropy Sinkhorn / Nelder-Mead (Hỗ trợ trong Engine để mô phỏng hội tụ số):**
-     Có thể tùy chọn bật chế độ hội tụ Nelder-Mead hoặc làm trơn Log-Sum-Exp với tham số điều hòa entropy $\varepsilon > 0$ để vẽ quỹ đạo hội tụ trên giao diện.
+   * **Phương pháp 2 – Thuật toán Tìm cực tiểu Phi đạo hàm Nelder-Mead (Simplex Search 2D) & Entropy Sinkhorn:**
+     Đúng như mô tả tại Bước 3 của Đề bài (`Description of Độ đo tổng thể..docx`): *"sử dụng một thuật toán tối ưu hóa (như toán học Vận tải Tối ưu OT hoặc thuật toán tìm cực tiểu Nelder-Mead) để quét toàn bộ không gian giải pháp và tìm ra bộ tham số đặc trưng duy nhất $(x^*, y^*)$"*.
+     * **Quy trình Nelder-Mead Simplex trên không gian 2D $(x, y)$:**
+       1. Khởi tạo đơn hình (tam giác) 3 đỉnh $\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3 \in \mathbb{R}^2$ quanh tâm trung bình cộng $(\bar{x}, \bar{y})$.
+       2. Tại mỗi vòng lặp $k$, sắp xếp 3 đỉnh theo giá trị hàm mục tiêu tổng khoảng cách sinh học: $J(\mathbf{v}_1) \le J(\mathbf{v}_2) \le J(\mathbf{v}_3)$.
+       3. Thực hiện các phép biến đổi hình học chuẩn trên tâm trọng lực $\mathbf{c} = \frac{1}{2}(\mathbf{v}_1 + \mathbf{v}_2)$:
+          * **Phản xạ (Reflection):** $\mathbf{v}_r = \mathbf{c} + \rho(\mathbf{c} - \mathbf{v}_3)$ ($\rho = 1.0$).
+          * **Giãn nở (Expansion):** $\mathbf{v}_e = \mathbf{c} + \chi(\mathbf{v}_r - \mathbf{c})$ ($\chi = 2.0$).
+          * **Co rút ngoài / trong (Contraction):** $\mathbf{v}_c = \mathbf{c} \pm \gamma(\mathbf{v}_3 - \mathbf{c})$ ($\gamma = 0.5$).
+          * **Thu nhỏ (Shrink):** $\mathbf{v}_i \leftarrow \mathbf{v}_1 + \sigma(\mathbf{v}_i - \mathbf{v}_1)$ ($\sigma = 0.5$).
+       4. Dừng khi đường kính đơn hình $\|\mathbf{v}_3 - \mathbf{v}_1\|_2 < 10^{-5}$.
+     * **Giá trị thực tiễn trong App:** Engine lưu lại toàn bộ chuỗi tọa độ các bước nhảy của đơn hình Nelder-Mead $\{\mathbf{v}_1^{(0)}, \mathbf{v}_1^{(1)}, \dots, (x^*, y^*)\}$ để vẽ **Quỹ đạo quét không gian giải pháp (Optimization Search Trajectory)** trực tiếp lên biểu đồ 2D $(\text{pH}, \text{EC})$!
+
+### 4.3. Mô hình Định lượng Tiết kiệm 5 Chi phí Điều khiển (Điện, Nước, Dinh dưỡng, Acid, Bazơ)
+Theo đề bài gốc (`Description of Độ đo tổng thể..docx`), việc điều khiển hòa trộn truyền thống phải thực hiện liên tục **$4 \times N$ lần/ngày** (Nội dung 4.4), trong khi phương pháp độ đo tổng thể $(x^*, y^*)$ chỉ cần thực hiện **1 lần/ngày** (ở chế độ Chu kỳ Hàng ngày) hoặc **$M_t$ lần/khối giờ** ($M_t \ll N$):
+* **Số chu kỳ hòa trộn tiết kiệm được mỗi ngày:**
+  $$\Delta C_{\text{cycles}} = 4N - C_{\text{actual}} \quad (\text{với } C_{\text{actual}} = 1 \text{ ở chế độ Hàng ngày, hoặc } C_{\text{actual}} = \sum_{t=1}^3 M_t \le 3..6)$$
+* **5 chỉ số tiết kiệm tài nguyên hàng ngày được tính toán trên App:**
+  1. **Điện năng ($\Delta E_{\text{elec}}$ - $\text{Wh}$):** Tiết kiệm điện vận hành bơm định lượng, mô-tơ cánh khuấy bể `100` và đóng/ngắt cụm van điện từ `107–113` qua $(4N - C_{\text{actual}})$ chu kỳ.
+  2. **Nước sạch xả rửa ($\Delta V_{\text{water}}$ - $\text{Lít}$):** Loại bỏ $(4N - 1)$ lần xả rửa đường ống trung gian nhờ dùng chung độ đo $(x^*, y^*)$ hoặc bơm bù vi phân $(\Delta x, \Delta y)$.
+  3. **Dinh dưỡng gốc A & B ($\Delta V_{\text{nutrients}}$ - $\text{mL}$):** Lượng phân bón không bị xả bỏ lãng phí theo nước rửa đường ống giữa các lần đổi công thức.
+  4. **Dung dịch Acid ($\Delta V_{\text{acid}}$ - $\text{mL}$):** Tiết kiệm hóa chất hạ pH (Bể C `105`) do không phải kéo pH lên/xuống liên tục $4N$ lần giữa các luống.
+  5. **Dung dịch Bazơ ($\Delta V_{\text{base}}$ - $\text{mL}$):** Tiết kiệm hóa chất nâng pH (Bể D `106`) nhờ tối ưu hóa điểm cân bằng $x^*$ hoặc tịnh tiến đơn chiều.
 
 ---
 
