@@ -1,8 +1,9 @@
 # Bộ Tài Liệu Đặc Tả MVP (Minimum Viable Product)
 ## Dự án: Ứng dụng Di động Điều phối Dinh dưỡng Trang trại Thông minh (AgroOT - Plantix-Inspired Mobile App)
 
-Bộ tài liệu này định nghĩa toàn diện sản phẩm MVP cho ứng dụng di động đa nền tảng giúp tính toán, trực quan hóa và điều phối **Độ đo dinh dưỡng tổng thể $(x^*, y^*)$** cho trang trại có $N$ loại cây trồng/luống cây, dựa trên tài liệu sáng chế:
-> *"Phương pháp xác định độ đo dinh dưỡng tổng thể thích ứng theo khối giờ sinh học và thời tiết cho hệ thống cung cấp dinh dưỡng tự động cho cây trồng tại cánh đồng mở sử dụng mô hình toán học Vận tải tối ưu"* ([Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx))
+Bộ tài liệu này định nghĩa toàn diện sản phẩm MVP cho ứng dụng di động đa nền tảng giúp tính toán, trực quan hóa và điều phối **Độ đo dinh dưỡng tổng thể $(x^*, y^*)$** cho trang trại có $N$ loại cây trồng/luống cây, dựa trên hai tài liệu gốc của đề tài:
+1. **Đề bài / Thuyết minh bài toán:** [Description of Độ đo tổng thể..docx](file:///d:/App_trong_cay/Agriculture_App/Description%20of%20%C4%90%E1%BB%99%20%C4%91o%20t%E1%BB%95ng%20th%E1%BB%83..docx) — *"Nghiên cứu, mô hình hoá, tối ưu hoá độ đo dinh dưỡng tổng thể để giảm chi phí điều khiển của quá trình điều khiển"* (tiết kiệm điện, nước, dinh dưỡng, acid, bazơ; đối chiếu với Euclidean [24], DTW [25], TTW [27]; hệ số phạt chuyên gia cho cả $x$ tránh bó rễ và $y$ tránh cháy rễ; bộ giải OT & Nelder-Mead giảm từ $4N$ lần pha xuống 1 lần/chu kỳ).
+2. **Tài liệu sáng chế mở rộng:** [Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx) — *"Phương pháp xác định độ đo dinh dưỡng tổng thể thích ứng theo khối giờ sinh học và thời tiết cho hệ thống cung cấp dinh dưỡng tự động cho cây trồng tại cánh đồng mở sử dụng mô hình toán học Vận tải tối ưu"*.
 
 Đồng thời, trải nghiệm người dùng (UX/UI) được thiết kế lấy cảm hứng trực tiếp từ ứng dụng nông nghiệp hàng đầu thế giới **Plantix** ("Bác sĩ cây trồng & Trợ lý dinh dưỡng số").
 
