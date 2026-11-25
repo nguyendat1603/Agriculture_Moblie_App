@@ -8,14 +8,22 @@ Mỗi loại cây ở từng giai đoạn sinh trưởng lại yêu cầu một 
 * **$x_{i,t}^{\text{target}}$ (Độ pH):** Quyết định khả năng hòa tan và hấp thụ ion khoáng của bộ rễ.
 * **$y_{i,t}^{\text{target}}$ (Độ dẫn điện EC - $\text{mS/cm}$):** Đại diện cho tổng nồng độ muối khoáng dinh dưỡng hòa tan.
 
-### Rào cản của các hệ thống hiện tại:
-1. **Cách pha riêng từng luống ($4 \times N$ chu kỳ/ngày):** Bắt buộc đóng/ngắt van định lượng (107–110), sục khuấy và xả rửa đường ống liên tục giữa các lần đổi công thức. Hệ quả là hao mòn phần cứng cơ khí, lãng phí nước sạch xả ống và gây trễ pha thủy lực.
-2. **Cách lấy trung bình cộng ngây thơ (Euclidean đối xứng):** Coi việc dư thừa hay thiếu hụt 1 đơn vị EC là như nhau. Trong thực tế sinh học, **thiếu hụt nhẹ** chỉ làm cây chậm lớn tạm thời, nhưng **dư thừa nồng độ quá ngưỡng** (đặc biệt vào buổi trưa nắng gắt) gây áp suất thẩm thấu ngược làm **cháy rễ cấp tính, hoại tử mô tế bào và khóa dinh dưỡng (nutrient lockout)** không thể cứu vãn.
+### Rào cản của các hệ thống và thước đo hiện tại (Theo Đề bài & Tài liệu Sáng chế):
+1. **Chi phí điều khiển quá lớn khi hòa trộn liên tục $4 \times N$ lần/ngày (Nội dung 4.4 trong đề bài):**
+   * Mỗi luống cây có chuỗi tham số dinh dưỡng mục tiêu biến thiên theo thời gian phụ thuộc giống cây, môi trường và giai đoạn sinh trưởng.
+   * Việc điều khiển hòa trộn riêng lẻ liên tục $4 \times N$ lần tiêu tốn rất nhiều **5 nguồn lực: Điện năng (bơm, khuấy, đóng/ngắt van), Nước sạch (xả rửa ống), Dinh dưỡng (phân A/B), Acid ($\text{pH Down}$) và Bazơ ($\text{pH Up}$)**, đồng thời làm giảm tuổi thọ phần cứng.
+2. **Hạn chế của Khoảng cách Euclidean truyền thống [24]:**
+   * Là thước đo khoảng cách vector cố định và đối xứng hình học phẳng; không nắm bắt được sự phụ thuộc theo thời gian lẫn đặc tính sinh trưởng bất đối xứng của cây trồng (coi thiếu hụt nhẹ và dư thừa gây chết rễ là như nhau).
+3. **Hạn chế của thuật toán Dynamic Time Warping (DTW) [25]:**
+   * Dù dùng phổ biến để căn chỉnh chuỗi thời gian, DTW chịu giới hạn bởi **độ phức tạp tính toán bậc hai $O(N^2)$** và **vi phạm bất đẳng thức tam giác (triangle inequality)**, khiến nó không khả thi về cả lý thuyết lẫn thực tiễn cho bài toán tối ưu hóa đa vùng theo thời gian thực trên phần cứng IoT.
+4. **Hạn chế của khoảng cách Temporal Tree Wasserstein (TTW) thuần túy [26, 27]:**
+   * Dù ứng dụng lý thuyết Vận tải tối ưu (Optimal Transport - OT) [26] để tạo độ đo mạnh mẽ trên cấu trúc cây thời gian, TTW nguyên bản vẫn vận hành trên khung hình học đối xứng, chưa phản ánh được rủi ro sinh học: dư thừa $y$ (EC) gây **cháy rễ cấp tính**, còn dư thừa/lệch trên $x$ (pH) gây **bó rễ / khóa dinh dưỡng (nutrient lockout)**.
 
 ### Giải pháp của Ứng dụng (AgroOT Mobile):
-Xây dựng một ứng dụng di động đa nền tảng đóng vai trò là **"Bộ não điều phối dinh dưỡng thông minh"** cho trang trại $N$ loại cây:
-* Sử dụng **Mô hình Vận tải tối ưu (Optimal Transport - Generalized Wasserstein Barycenter)** kết hợp **Hàm chi phí tổn thất sinh học bất đối xứng** để tìm ra bộ độ đo dinh dưỡng tổng thể tối ưu $(x^*, y^*)$ thích ứng theo **4 khối giờ sinh học** và **điều kiện thời tiết thực địa**.
-* Tự động chuyển sang **Đa tâm động (Wasserstein K-Means)** khi nhu cầu giữa $N$ loại cây phân hóa quá sâu, kết hợp **Hàng đợi thủy lực** và **Bơm bù vi phân** để tái sử dụng 100% dung dịch nền tồn lưu trong đường ống.
+Xây dựng ứng dụng di động đa nền tảng đóng vai trò là **"Bộ não tối ưu hóa độ đo dinh dưỡng tổng thể & giảm chi phí điều khiển"** cho trang trại $N$ loại cây:
+* Phát biểu bài toán dưới dạng **Tối ưu hóa Tâm hình học Wasserstein tổng quát (Generalized Wasserstein Barycenter) [24, 27]** tích hợp trực tiếp **Hàm chi phí tổn thất sinh học bất đối xứng do Chuyên gia nông nghiệp cấu hình** riêng cho từng loại cây và từng giai đoạn sinh trưởng (bao gồm **Phạt lệch dưới - Low Penalty** và **Phạt lệch trên - High Penalty** cho cả $x$ tránh bó rễ và $y$ tránh cháy rễ).
+* Sử dụng thuật toán **Vận tải tối ưu (OT)** và **Thuật toán tìm cực tiểu Nelder-Mead (Simplex Search)** để quét không gian giải pháp, tìm ra bộ tham số đặc trưng $(x^*, y^*)$ tối ưu nhất (hỗ trợ cả chế độ **1 lần phối trộn/ngày** theo đề bài gốc và chế độ **thích ứng 4 khối giờ sinh học & thời tiết / Đa tâm động** theo bản sáng chế).
+* Giảm số lần phối trộn từ $4 \times N$ lần xuống chỉ còn **1 lần duy nhất trong mỗi chu kỳ điều khiển**, định lượng rõ mức tiết kiệm **Điện, Nước, Dinh dưỡng, Acid và Bazơ**.
 
 ---
 
