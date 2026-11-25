@@ -8,12 +8,13 @@
    * Tích hợp **Thư viện Cây trồng chuẩn (Plantix Crop Library)** (Xà lách, Cải ngọt, Cà chua, Dâu tây, Dưa lưới, Ớt chuông, Dưa chuột, Rau muống...) với thông số $(\text{pH}, \text{EC})$ tự động cập nhật theo **4 giai đoạn sinh trưởng**: *1. Cây con (Kiến thiết)*, *2. Sinh trưởng thân lá*, *3. Ra hoa*, *4. Nuôi quả / Thu hoạch*.
    * Hỗ trợ **Chế độ Trọng số Kép**: Mặc định trọng số bằng nhau ($1/N$) hoặc bật tính trọng số theo **Diện tích luống ($\text{m}^2$) & Độ nhạy cảm giống cây ($s_i$)**.
    * Nút nạp nhanh **"Kịch bản Mẫu Sáng chế ($N=2$: Xà lách & Cải ngọt)"** và **"Kịch bản Trang trại Đa canh ($N=6$ loại cây)"** để demo tức thì.
-2. **Trạm Điều khiển Khối giờ Sinh học & Vi khí hậu (Interactive Bio-Clock & Simulator):**
-   * Chọn nhanh 1 trong 4 Khối giờ sinh học ($t=1$: Sáng sớm 6h-8h, $t=2$: Trưa nắng 10h-14h, $t=3$: Chiều mát 15h-17h, $t=4$: Ban đêm sau 18h).
-   * Chọn kịch bản thời tiết (Ôn hòa, Nắng gắt bức xạ cao $K_{\text{sunny}}$, Mưa lớn rửa trôi $K_{\text{rainy}}$) và thanh trượt tùy chỉnh hệ số phạt $(w_{\text{low},t}, w_{\text{high},t}, k_t, \alpha_t)$ cũng như trạng thái bể trung tâm `100`.
-3. **Bộ giải Độ đo Dinh dưỡng Tổng thể (Auto-Detect & Manual Override $M_t \in \{2..4\}$):**
-   * Mặc định tự động phát hiện và chuyển sang **Đa tâm động (Wasserstein K-Means)** khi độ phân hóa vượt ngưỡng (`Auto-Detect`), đồng thời cho phép người dùng bật/tắt thủ công giữa **Đơn tâm** và **Đa tâm ($M_t = 2, 3, 4$ cụm)** để so sánh trực tiếp.
-   * Hiển thị rõ kết quả $(x^*, y^*)$ (Độ pH & Nồng độ EC tổng thể) cùng tổng chi phí tổn thất sinh học $\mathcal{D}_{\text{bio}}$.
+2. **Trạm Điều khiển Chu kỳ Hàng ngày & 4 Khối giờ Sinh học + Vi khí hậu (Interactive Bio-Clock & Simulator):**
+   * Hỗ trợ **Chế độ Chu kỳ Hàng ngày (1 lần phối trộn/ngày thay cho $4N$ lần)** đúng theo đề bài `Description of Độ đo tổng thể..docx`, VÀ **Chế độ 4 Khối giờ sinh học ($t=1..4$)** theo bản sáng chế mở rộng (`Tài liệu gửi sinh viên.docx`).
+   * Chọn kịch bản thời tiết (Ôn hòa, Nắng gắt bức xạ cao $K_{\text{sunny}}$, Mưa lớn rửa trôi $K_{\text{rainy}}$) và thanh trượt tùy chỉnh hệ số phạt chuyên gia (**Low Penalty** & **High Penalty** cho cả $x$ tránh bó rễ và $y$ tránh cháy rễ).
+3. **Bộ giải Độ đo Dinh dưỡng Tổng thể (OT Quantile + Quét không gian Nelder-Mead Simplex):**
+   * Cho phép chọn thuật toán giải: **Tâm hình học Vận tải tối ưu (OT Barycenter)** hoặc **Thuật toán tìm cực tiểu Nelder-Mead (hiển thị quỹ đạo quét không gian giải pháp trên mặt phẳng 2D)**.
+   * Mặc định tự động phát hiện và chuyển sang **Đa tâm động (Wasserstein K-Means)** khi độ phân hóa vượt ngưỡng (`Auto-Detect`), đồng thời cho phép người dùng bật/tắt thủ công giữa **Đơn tâm (1 lần pha)** và **Đa tâm ($M_t = 2, 3, 4$ cụm)** để so sánh trực tiếp.
+   * Hiển thị rõ kết quả $(x^*, y^*)$ (Độ pH & Nồng độ EC tổng thể), tổng chi phí tổn thất sinh học $\mathcal{D}_{\text{bio}}$, cùng **Bảng Thống kê Tiết kiệm 5 Chi phí Điều khiển (Điện, Nước, Dinh dưỡng, Acid, Bazơ)** so với phương pháp pha $4 \times N$ lần và so với các thước đo Euclidean [24], DTW [25], TTW [27].
 4. **Định lượng Chuẩn Thủy canh cho 4 Bể A, B, C, D (`103–106`) & 4 Van (`107–110`):**
    * Quy ước chuẩn thủy canh thực tế: **Bể A (`103` - Van `107`)** và **Bể B (`104` - Van `108`)** là dung dịch phân gốc A & B giúp tăng nồng độ EC ($y$); **Bể C (`105` - Van `109`)** là dung dịch Acid ($\text{pH Down}$) hạ độ pH ($x$); **Bể D (`106` - Van `110`)** là dung dịch Bazơ ($\text{pH Up}$) nâng độ pH ($x$).
    * Tự động tính toán và hiển thị lượng dung dịch cần bơm ($\text{mL}$) và thời gian mở van định lượng ($t_{\text{open}}$ giây) cho từng kỳ phối trộn.
