@@ -109,4 +109,16 @@ Trên thanh điều khiển thuật toán của App, người dùng có bộ ch�
    * Đảm bảo ứng dụng mở lên là chạy ngay lập tức ngoài cánh đồng không có Internet.
 2. **Tầng Tài khoản & Đồng bộ Đám mây (Cloud Auth & Database Sync – Supabase / Firebase):**
    * Có màn hình **Đăng nhập / Đăng ký Tài khoản Trang trại** (Email/Password hoặc chế độ **Khách / Demo Nhanh 1 chạm**) và nút **Đồng bộ Cloud (Giải pháp đám mây 114)**.
-   * Khi cấu hình URL & Key của Supabase (hoặc dùng Cloud Sync Service trong App), danh sách $N$ luống cây và lịch cung cấp dinh dưỡng theo khối giờ (tham số mục tiêu `118`) được đồng bộ hai chiều giữa thiết bị di động và đám mây `114`.
+## 7. Bổ Sung Từ File Đề Bài Gốc (`Description of Độ đo tổng thể..docx`)
+
+Để đảm bảo ứng dụng bao phủ trọn vẹn cả **Đề bài nghiên cứu gốc** ([Description of Độ đo tổng thể..docx](file:///d:/App_trong_cay/Agriculture_App/Description%20of%20%C4%90%E1%BB%99%20%C4%91o%20t%E1%BB%95ng%20th%E1%BB%83..docx)) lẫn **Tài liệu sáng chế mở rộng** ([Tài liệu gửi sinh viên.docx](file:///d:/App_trong_cay/Agriculture_App/T%C3%A0i%20li%E1%BB%87u%20g%E1%BB%ADi%20sinh%20vi%C3%AAn.docx)), bản MVP tích hợp thêm 4 đặc tả kỹ thuật sau:
+
+1. **Hỗ trợ Hệ số phạt Chuyên gia Nông nghiệp cho CẢ $x$ (pH – Tránh bó rễ) VÀ $y$ (EC – Tránh cháy rễ) theo từng Loại cây & Giai đoạn sinh trưởng:**
+   * Mỗi loại cây trồng trong thư viện ở từng giai đoạn sinh trưởng được chuyên gia cấu hình sẵn cặp **Low Penalty** (phạt lệch dưới khi $x < x_i^{\text{target}}$ hoặc $y < y_i^{\text{target}}$) và **High Penalty** (phạt lệch trên khi $x > x_i^{\text{target}}$ gây **bó rễ / khóa dinh dưỡng** hoặc $y > y_i^{\text{target}}$ gây **cháy rễ**).
+2. **Tích hợp Thuật toán Quét Không gian Giải pháp Nelder-Mead (Simplex Search) song song với Vận tải Tối ưu (OT):**
+   * Cho phép chạy trực tiếp giải thuật **Nelder-Mead** để quét mặt phẳng 2D $(x, y)$ tìm điểm cực tiểu $(x^*, y^*) = \arg\min \sum_{i=1}^N \mathcal{D}_{\text{bio}}((x, y) \rightarrow (x_i^{\text{target}}, y_i^{\text{target}}))$ và vẽ quỹ đạo hội tụ của các đỉnh Simplex trên biểu đồ.
+3. **Chế độ Chu kỳ Điều khiển Hàng ngày (1 lần/ngày vs. $4 \times N$ lần/ngày) & 4 Khối giờ Sinh học:**
+   * Có chế độ **"Chu kỳ Hàng ngày (1 lần pha/ngày)"** đúng theo Bước 4 của đề bài gốc, bên cạnh chế độ **"4 Khối giờ Sinh học ($t=1..4$)"**.
+4. **Định lượng Tiết kiệm 5 Chi phí Điều khiển & So sánh 4 Thước đo Học thuật:**
+   * Hiển thị thẻ định lượng mức tiết kiệm **5 nguồn lực: Điện năng ($\text{Wh}$), Nước sạch ($\text{L}$), Dinh dưỡng ($\text{mL}$), Acid ($\text{mL}$), Bazơ ($\text{mL}$)** khi giảm số lần hòa trộn từ $4 \times N$ lần xuống 1 lần/chu kỳ.
+   * Hiển thị bảng đối chiếu trực quan giữa **Khoảng cách Euclidean [24]**, **Dynamic Time Warping (DTW) [25]** (độ phức tạp $O(N^2)$, vi phạm bất đẳng thức tam giác), **Temporal Tree Wasserstein (TTW) [27]** và **Generalized Bio-Wasserstein Barycenter [24, 26, 27]**.
