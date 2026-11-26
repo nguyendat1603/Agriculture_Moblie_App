@@ -1,0 +1,29 @@
+name: agro_ot_mobile
+description: >-
+  Ung dung di dong dieu phoi do do dinh duong tong the (x*, y*) cho trang trai
+  co N loai cay trong su dung mo hinh toan hoc Van tai toi uu (Optimal Transport),
+  Nelder-Mead Simplex, Wasserstein K-Means va ngon ngu thiet ke Plantix.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/crops/
+    - assets/images/schematics/
+    - assets/icons/
+    - assets/presets/
